@@ -24,3 +24,42 @@ Notice the providers have different blockchains support, so to tweek that for yo
 # How to run
 
 `npm run benchmark`
+
+# Results format
+
+`
+{
+    [publicKey]: {
+        [network]: {
+            [provider]: { 
+                result: TokenBalance[]; 
+                tokenList: string 
+            };
+        };
+    };
+};
+{
+    [network]: {
+        [provider]: { 
+            results: number[]; 
+            avgTimer: number 
+        };
+    };
+};
+{
+    [provider]: {
+        totalTime: number,
+        count: number,
+        avgTime: number
+    },
+};`
+
+# type
+
+`
+type TokenBalance = {
+    amount: string;
+    token?: string;
+    amountUsd?: string;
+    blockchain?: BlockchainsEnum;
+};`
