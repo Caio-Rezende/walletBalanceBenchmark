@@ -1,0 +1,52 @@
+[
+  {
+    "tokenCount": "22",
+    "userPublicKey": "0x1d17371f4502357942b199cb0de90c6821f01fa5",
+    "f0_": "AAVE,APE,AXS,BNB,CAKE,CHZ,CRO,DAO,ETH,FTT,GRT,HEX,LINK,MANA,MATIC,SAND,SDAO,SFUND,SUSHI,UNI,USDC,USDT"
+  },
+  {
+    "tokenCount": "22",
+    "userPublicKey": "0x0ac5018cd80820184fcf2828cc8f973b71c1dc0a",
+    "f0_": "APE,AVAX,AXS,BCOIN,BHEROES,BNB,BOMB,BSW,CAKE,CHAIN,DAI,ETH,MAFA,MATIC,MHT,REVO,RHT,SAND,THG,TINC,USDC,USDT"
+  },
+  {
+    "tokenCount": "21",
+    "userPublicKey": "0x9adb88d3c48b8a0bcbe88b9d2b351a1fc768edc1",
+    "f0_": "APE,AVAX,BABYDOGE,BCOIN,BNB,CAKE,DAI,DOGECAT,ETH,EVOC,KART,LUS,MAFA,MATIC,MHT,RHT,SAND,SFF,STR,USDC,USDT"
+  },
+  {
+    "tokenCount": "19",
+    "userPublicKey": "0x5f19623d32f82dbc1d936d0ebfa5d99dde2db10a",
+    "f0_": "AVAX,AXS,BCOIN,BNB,BUSD,CAKE,DAI,ETH,FTM,MAFA,MATIC,MHT,MYP,SAND,SEN,STG,UNI,USDC,USDT"
+  },
+  {
+    "tokenCount": "16",
+    "userPublicKey": "0x309927aa2d38b204adc349d399c1c15167f0886d",
+    "f0_": "APE,BCOIN,BNB,BUSD,CAKE,ETH,ILV,MANA,MATIC,MBOX,MHT,PNG,SAND,USDC,USDT,WOM"
+  },
+  {
+    "tokenCount": "15",
+    "userPublicKey": "0xe20a80fc5bfc479531ee0a61fec3ee9110ee7691",
+    "f0_": "APE,AVAX,BABYDOGE,BCOIN,BNB,BUSD,CAKE,DAI,ETH,KLAY,MATIC,MHT,MYP,USDC,USDT"
+  },
+  {
+    "tokenCount": "14",
+    "userPublicKey": "0xaf43f4157eb38e4ab708ab8de042550762279950",
+    "f0_": "APE,BNB,BUSD,CAKE,ETH,FTM,MATIC,MHT,SAND,SEN,SHIB,SMON,USDC,USDT"
+  },
+  {
+    "tokenCount": "14",
+    "userPublicKey": "0x0f701e43f3eeeabf5a43ccd5347d219e638c2b2b",
+    "f0_": "AXS,BCOIN,BNB,BOMB,BTCB,BUSD,FTT,HCT,MATIC,RACA,SEN,USDC,USDT,XRP"
+  },
+  {
+    "tokenCount": "13",
+    "userPublicKey": "0xcfe6b36f3ed4acbc0dd118e7f4838f12ac46e431",
+    "f0_": "ALI,BLOK,CRO,EPIK,EPK,EXRD,HEX,LINK,MATIC,METIS,SDAO,UNI,VLX"
+  },
+  {
+    "tokenCount": "13",
+    "userPublicKey": "0x6d94bc25d4618edb39290a6a171f249a997d18dd",
+    "f0_": "BANK,BNB,BSW,BUSD,CAKE,GEAR,LINK,MATIC,SDAO,STEP,STEPG,TRX,USDC"
+  }
+]

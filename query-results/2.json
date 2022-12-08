@@ -1,0 +1,21 @@
+[{
+    "tokenCount": "18",
+    "userPublicKey": "0x1d17371f4502357942b199cb0de90c6821f01fa5",
+    "blockchainId": "1",
+    "f0_": "AAVE,APE,AXS,CHZ,CRO,DAO,ETH,FTT,GRT,HEX,LINK,MANA,SAND,SDAO,SUSHI,UNI,USDC,USDT"
+  }, {
+    "tokenCount": "14",
+    "userPublicKey": "0x9adb88d3c48b8a0bcbe88b9d2b351a1fc768edc1",
+    "blockchainId": "56",
+    "f0_": "BABYDOGE,BCOIN,BNB,CAKE,DOGECAT,EVOC,KART,LUS,MAFA,MHT,RHT,STR,USDC,USDT"
+  }, {
+    "tokenCount": "13",
+    "userPublicKey": "0x0ac5018cd80820184fcf2828cc8f973b71c1dc0a",
+    "blockchainId": "56",
+    "f0_": "BCOIN,BHEROES,BNB,BSW,CAKE,DAI,MAFA,MHT,RHT,THG,TINC,USDC,USDT"
+  }, {
+    "tokenCount": "11",
+    "userPublicKey": "0x6d94bc25d4618edb39290a6a171f249a997d18dd",
+    "blockchainId": "56",
+    "f0_": "BNB,BSW,BUSD,CAKE,GEAR,LINK,SDAO,STEP,STEPG,TRX,USDC"
+  }]
