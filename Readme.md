@@ -27,22 +27,22 @@ Notice the providers have different blockchains support, so to tweek that for yo
 
 # Results format
 
-`
+```TypeScript
 {
     [publicKey]: {
         [network]: {
-            [provider]: { 
-                result: TokenBalance[]; 
-                tokenList: string 
+            [provider]: {
+                result: TokenBalance[];
+                tokenList: string
             };
         };
     };
 };
 {
     [network]: {
-        [provider]: { 
-            results: number[]; 
-            avgTimer: number 
+        [provider]: {
+            results: number[];
+            avgTimer: number
         };
     };
 };
@@ -52,14 +52,16 @@ Notice the providers have different blockchains support, so to tweek that for yo
         count: number,
         avgTime: number
     },
-};`
+};
+```
 
 # type
 
-`
+```TypeScript
 type TokenBalance = {
     amount: string;
     token?: string;
     amountUsd?: string;
     blockchain?: BlockchainsEnum;
-};`
+};
+```
