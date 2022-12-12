@@ -7,8 +7,6 @@ import roninJson from "../../query-results/4.json" assert { type: "json" };
 import avaKlaytnJson from "../../query-results/5.json" assert { type: "json" };
 import solanaFTMJson from "../../query-results/6.json" assert { type: "json" };
 
-const SKIP_TEST_ADDRESSES: boolean = true;
-const LIMIT_PUBLIC_KEYS: number | undefined = undefined;
 const TEST_ADDRESSES = [
   "0x1d17371f4502357942b199cb0de90c6821f01fa5", //eth
   "0x9adb88d3c48b8a0bcbe88b9d2b351a1fc768edc1", //bsc
@@ -24,7 +22,11 @@ const TEST_ADDRESSES = [
   "0x1111111254fb6c44bAC0beD2854e76F90643097d", //polygon - dev
 ];
 
-export function getPublicKeys(benchmarkChains: BlockchainsEnum[]): string[] {
+export function getPublicKeys(
+  benchmarkChains: BlockchainsEnum[],
+  skipTestAdresses: boolean = false,
+  limitPublicKeys: number | undefined = undefined
+): string[] {
   const ethereumPublicKeys = genericJson
     .filter((a) => a.f0_.includes("ETH"))
     .map((a) => a.userPublicKey);
@@ -47,9 +49,9 @@ export function getPublicKeys(benchmarkChains: BlockchainsEnum[]): string[] {
     .filter((a) => a.blockchainId === "SOLANA")
     .map((a) => a.userPublicKey);
 
-  const startSlice = SKIP_TEST_ADDRESSES ? TEST_ADDRESSES.length : 0;
-  const endSlice = LIMIT_PUBLIC_KEYS
-    ? LIMIT_PUBLIC_KEYS + startSlice
+  const startSlice = skipTestAdresses ? TEST_ADDRESSES.length : 0;
+  const endSlice = limitPublicKeys
+    ? limitPublicKeys + startSlice
     : undefined;
 
   return Array.from(

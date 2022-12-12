@@ -60,6 +60,7 @@ export class CovalentHQBenchmark extends BenchmarkProvider {
       token: asset?.contract_ticker_symbol,
       amount: asset?.balance,
       amountUsd: asset?.quote,
+      decimals: parseInt(asset?.contract_decimals, 10)
     }));
   }
 }

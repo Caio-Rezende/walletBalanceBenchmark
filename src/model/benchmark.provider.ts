@@ -20,6 +20,7 @@ export type ParamType = {
   url: string;
   body?: Object;
   blockchain: BlockchainsEnum;
+  publicKey?: string;
 };
 
 export abstract class BenchmarkProvider {
@@ -170,7 +171,11 @@ export abstract class BenchmarkProvider {
   }
 
   private saveTimer(blockchain: BlockchainsEnum, diffTimer: number) {
-    this.benchmark?.addExecTimeToProvider(this.constructor.name, blockchain, diffTimer)
+    this.benchmark?.addExecTimeToProvider(
+      this.constructor.name,
+      blockchain,
+      diffTimer
+    );
   }
 
   private validateBlockchainPubliKey(

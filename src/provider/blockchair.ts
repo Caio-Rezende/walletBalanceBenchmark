@@ -1,5 +1,10 @@
 import { HeadersInit } from "node-fetch";
-import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import {
+  BenchmarkProvider,
+  BlockchainsEnum,
+  ParamType,
+  TokenBalance,
+} from "../model";
 
 export class BlockChairBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 30;
@@ -48,17 +53,22 @@ export class BlockChairBenchmark extends BenchmarkProvider {
           blockchain,
           token: "BTC",
           amount: address.balance,
+          decimals: 18,
         },
       ];
     }
 
     const layer2Erc20 =
       ret?.data[Object.keys(ret.data)[0]]?.layer_2?.erc_20 ?? [];
-    return layer2Erc20.map((asset: any) => ({
-      blockchain,
-      token: asset?.token_symbol,
-      amount: asset?.balance_approximate,
-      amountUsd: asset?.balance_usd,
-    }));
+    return layer2Erc20.map(
+      (asset: any) =>
+        ({
+          blockchain,
+          token: asset?.token_symbol,
+          decimals: asset?.token_decimals,
+          amount: asset?.balance_approximate,
+          amountUsd: asset?.balance_usd,
+        })
+    );
   }
 }

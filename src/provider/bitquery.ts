@@ -1,5 +1,10 @@
 import { HeadersInit } from "node-fetch";
-import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import {
+  BenchmarkProvider,
+  BlockchainsEnum,
+  ParamType,
+  TokenBalance,
+} from "../model";
 
 export class BitQueryBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 10;
@@ -71,6 +76,7 @@ export class BitQueryBenchmark extends BenchmarkProvider {
       balances {
         currency {
           symbol
+          decimals
         }
         value
       }
@@ -104,6 +110,7 @@ export class BitQueryBenchmark extends BenchmarkProvider {
             blockchain,
             token: "SOL",
             amount: balance,
+            decimals: 18,
           },
         ];
       case BlockchainsEnum.bitcoin:
@@ -113,6 +120,7 @@ export class BitQueryBenchmark extends BenchmarkProvider {
             blockchain,
             token: "BTC",
             amount: value,
+            decimals: 18,
           },
         ];
       default:
@@ -121,6 +129,7 @@ export class BitQueryBenchmark extends BenchmarkProvider {
             blockchain,
             token: asset?.currency?.symbol,
             amount: asset?.value,
+            decimals: asset?.currency?.decimals
           })
         );
     }

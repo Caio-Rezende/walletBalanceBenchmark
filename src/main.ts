@@ -31,7 +31,7 @@ const providers: BenchmarkProvider[] = [
   new BitQueryBenchmark(benchmarkChains),
   new BlockChairBenchmark(benchmarkChains),
   new CovalentHQBenchmark(benchmarkChains),
-  //new DebankBenchmark(benchmarkChains),
+  new DebankBenchmark(benchmarkChains),
   new MoralisBenchmark(benchmarkChains),
 ];
 
@@ -62,13 +62,12 @@ const providers: BenchmarkProvider[] = [
     })
   );
 
-  console.debug(JSON.stringify(BenchmarkProvider.balances));
-  console.debug(JSON.stringify(BenchmarkProvider.blockChainTimer));
+  console.log(JSON.stringify(BenchmarkProvider.balances));
+  console.log(JSON.stringify(BenchmarkProvider.blockChainTimer));
   console.timeLog("main", "initiating benchmark comparison");
 
   const benchmarkResults = benchmark.getResults();
-  console.debug(JSON.stringify(benchmarkResults));
-  console.table(benchmarkResults);
+  console.log(JSON.stringify(benchmarkResults));
 
   console.timeEnd("main");
 })();

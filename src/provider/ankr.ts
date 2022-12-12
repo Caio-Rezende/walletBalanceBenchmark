@@ -1,4 +1,9 @@
-import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import {
+  BenchmarkProvider,
+  BlockchainsEnum,
+  ParamType,
+  TokenBalance,
+} from "../model";
 
 export class ANKRBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 30000;
@@ -56,6 +61,7 @@ export class ANKRBenchmark extends BenchmarkProvider {
       token: asset?.tokenSymbol,
       amount: asset?.balance,
       amountUsd: asset?.balanceUsd,
+      decimals: asset?.tokenDecimals,
     }));
   }
 }

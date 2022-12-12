@@ -50,6 +50,7 @@ export class DebankBenchmark extends BenchmarkProvider {
       token: asset?.symbol,
       amount: asset?.balance,
       amountUsd: asset?.price,
+      decimals: parseInt(asset?.decimals, 10)
     }));
   }
 }
