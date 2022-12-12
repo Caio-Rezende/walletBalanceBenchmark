@@ -1,7 +1,7 @@
 import { HeadersInit } from "node-fetch";
-import { Benchmark, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
 
-export class BitQueryBenchmark extends Benchmark {
+export class BitQueryBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 10;
   protected url: string = "https://graphql.bitquery.io";
   protected method: string = "POST";
@@ -29,7 +29,7 @@ export class BitQueryBenchmark extends Benchmark {
 
   constructor(benchmarkChains: BlockchainsEnum[]) {
     super();
-    this.prepareBlockChains(benchmarkChains);
+    this.prepareBlockchains(benchmarkChains);
   }
 
   protected getHeaders(): HeadersInit {
@@ -82,7 +82,7 @@ export class BitQueryBenchmark extends Benchmark {
   }
 
   protected getParams(publicKey: string): ParamType[] {
-    return this.blockChains.map((blockchain) => ({
+    return this.queryingBlockchains.map((blockchain) => ({
       blockchain: this.mapBlockchainName[blockchain],
       url: this.url,
       body: {

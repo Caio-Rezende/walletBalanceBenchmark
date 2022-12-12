@@ -1,7 +1,7 @@
 import { HeadersInit } from "node-fetch";
-import { Benchmark, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
 
-export class DebankBenchmark extends Benchmark {
+export class DebankBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 6000;
   protected url: string = "https://pro-openapi.debank.com/v1/user/token_list";
   protected method: string = "GET";
@@ -16,7 +16,7 @@ export class DebankBenchmark extends Benchmark {
 
   constructor(benchmarkChains: BlockchainsEnum[]) {
     super();
-    this.prepareBlockChains(benchmarkChains);
+    this.prepareBlockchains(benchmarkChains);
   }
 
   protected getHeaders(): HeadersInit {
@@ -28,7 +28,7 @@ export class DebankBenchmark extends Benchmark {
   }
 
   protected getParams(publicKey: string): ParamType[] {
-    return this.blockChains.map((blockchain) => {
+    return this.queryingBlockchains.map((blockchain) => {
       const params = new URLSearchParams({
         id: publicKey,
         chain_id: blockchain,

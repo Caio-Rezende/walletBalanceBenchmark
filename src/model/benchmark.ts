@@ -1,211 +1,174 @@
-import fetch, { HeadersInit } from "node-fetch";
-import { PublicKey as SolanaPublicKey } from "@solana/web3.js";
-import { validate as validateBitCoinAddress } from "bitcoin-address-validation";
-
-import {
-  TOO_MANY_REQUESTS_EXCEPTION,
-  FORBIDDEN_EXCEPTION,
-  TEMPORARY_BLOCK_EXCEPTION,
-  NOT_OK_EXCEPTION,
-} from "../exception";
-import { TokenBalance } from "./balance";
 import { BlockchainsEnum } from "../enums/blockchains";
 
-export type ParamType = {
-  url: string;
-  body?: Object;
-  blockchain: BlockchainsEnum;
+type BenchmarkTime = {
+  //blockchainName
+  [key in BlockchainsEnum]?: number[];
+};
+type BenchmarkToken = {
+  //blockchainName
+  [key in BlockchainsEnum]?: string[];
 };
 
-export abstract class Benchmark {
-  protected blockChains: string[] = [];
-  protected minSleepMiliSeconds: number = 500;
+type BenchmarkAttributes = {
+  timeExec: BenchmarkTime;
+  tokens: BenchmarkToken;
+};
 
-  protected abstract minIntervalBettweenRequestsInSeconds: number;
-  protected abstract url: string;
-  protected abstract method: string;
-  protected abstract supportedBlockchains: string[];
-  protected abstract mapBlockchainName: Record<string, BlockchainsEnum>;
+type BenchmarkTimeStatistics =
+  | "totalTime"
+  | "count"
+  | "avgTime"
+  | "maxTime"
+  | "minTime"
+  | `avgTimeFor${keyof typeof BlockchainsEnum}`;
+type BenchmarkTokenStatistics =
+  `missingTokensFor${keyof typeof BlockchainsEnum}`;
 
-  public static blockChainTimer: {
-    [key in string]: {
-      [key in string]: { results: number[]; avgTimer: number };
-    };
+type BenchmarkTimeStatisticsResult = {
+  [key in BenchmarkTimeStatistics]?: number;
+};
+type BenchmarkTokenStatisticsResult = {
+  [key in BenchmarkTokenStatistics]?: string;
+};
+
+type resultAttributes =
+  | "provider"
+  | BenchmarkTimeStatistics
+  | BenchmarkTokenStatistics;
+
+type BenchmarkResultAttributes = {
+  [key in resultAttributes]?: string | number;
+};
+
+export class Benchmark {
+  protected results: {
+    [key in string]: BenchmarkAttributes;
   } = {};
+  protected allTokensForBlockchain: { [key in BlockchainsEnum]?: string[] } =
+    {};
 
-  public static balances: {
-    [key in string]: {
-      [key in string]: {
-        [key in string]: { result: TokenBalance[]; tokenList: string };
-      };
-    };
-  } = {};
-
-  protected abstract getParams(publicKey: string): ParamType[];
-  protected abstract transformResponse(
-    blockchain: BlockchainsEnum,
-    ret: any
-  ): TokenBalance[];
-
-  public prepareBlockChains(benchmarkChains: BlockchainsEnum[]) {
-    this.blockChains = benchmarkChains
-      .map(
-        (b) =>
-          Object.keys(this.mapBlockchainName)[
-            Object.values(this.mapBlockchainName).indexOf(b)
-          ]
-      )
-      .filter((a) => a !== undefined);
-  }
-
-  public async exec(publicKey: string): Promise<number> {
-    const paramsList = this.getParams(publicKey);
-
-    let totalTimer = 0;
-
-    for (let params of paramsList) {
-      const timer = performance.now();
-
-      await this.exectWithParams(publicKey, params);
-
-      const diffTimer = performance.now() - timer;
-      totalTimer += diffTimer;
-
-      this.saveTimer(params.blockchain, diffTimer);
-
-      if (this.minSleepMiliSeconds > 0) {
-        await new Promise((resolve) => {
-          setTimeout(
-            resolve,
-            this.minSleepMiliSeconds +
-              this.minIntervalBettweenRequestsInSeconds * 1000
-          );
-        });
-      }
-    }
-
-    return totalTimer;
-  }
-
-  protected getHeaders(): HeadersInit {
-    return {
-      "Content-Type": "application/json",
+  public addProvider(providerName: string) {
+    this.results[providerName] = {
+      timeExec: {},
+      tokens: {},
     };
   }
 
-  private sort(a: TokenBalance, b: TokenBalance): number {
-    return (a.token ?? "").localeCompare(b.token ?? "");
-  }
-
-  private filter(a?: TokenBalance) {
-    return (a?.token ?? "").toString().length > 0;
-  }
-
-  private async exectWithParams(publicKey: string, params: ParamType) {
-    const blockchain = params.blockchain;
-
-    if (!this.validateBlockchainPubliKey(blockchain, publicKey)) {
-      return;
-    }
-
-    const retList = (await this.fetch(params))
-      ?.filter(this.filter)
-      ?.sort(this.sort);
-
-    if (!retList) return;
-    this.saveBalanceResult(blockchain, publicKey, retList);
-  }
-
-  private saveBalanceResult(
+  public addExecTimeToProvider(
+    providerName: string,
     blockchain: BlockchainsEnum,
-    publicKey: string,
-    retList: TokenBalance[]
+    execTime: number
   ) {
-    if (!Benchmark.balances[publicKey]) {
-      Benchmark.balances[publicKey] = {};
+    if (!(blockchain in this.results[providerName].timeExec)) {
+      this.results[providerName].timeExec[blockchain] = [];
     }
-    if (!Benchmark.balances[publicKey][blockchain]) {
-      Benchmark.balances[publicKey][blockchain] = {};
-    }
-    Benchmark.balances[publicKey][blockchain][this.constructor.name] = {
-      result: retList,
-      tokenList: retList.map((a) => a.token).join(", "),
-    };
+    this.results[providerName].timeExec[blockchain]!.push(execTime);
   }
 
-  private saveTimer(blockchain: BlockchainsEnum, diffTimer: number) {
-    if (!Benchmark.blockChainTimer[blockchain]) {
-      Benchmark.blockChainTimer[blockchain] = {};
-    }
-    if (!Benchmark.blockChainTimer[blockchain][this.constructor.name]) {
-      Benchmark.blockChainTimer[blockchain][this.constructor.name] = {
-        results: [],
-        avgTimer: 0,
-      };
-    }
-    Benchmark.blockChainTimer[blockchain][this.constructor.name].results.push(
-      diffTimer
-    );
-    Benchmark.blockChainTimer[blockchain][this.constructor.name].avgTimer +=
-      diffTimer;
-    Benchmark.blockChainTimer[blockchain][this.constructor.name].avgTimer /= 2;
-  }
-
-  private validateBlockchainPubliKey(
+  public addTokensToProviderBlockchain(
+    providerName: string,
     blockchain: BlockchainsEnum,
-    publicKey: string
-  ): boolean {
-    switch (blockchain) {
-      case BlockchainsEnum.ronin:
-        return publicKey.startsWith("ronin:");
-      case BlockchainsEnum.bitcoin:
-        return validateBitCoinAddress(publicKey);
-      case BlockchainsEnum.solana:
-        if (
-          !/[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]/.test(
-            publicKey
-          )
-        )
-          return false;
-
-        try {
-          const address = new SolanaPublicKey(publicKey);
-          return SolanaPublicKey.isOnCurve(address.toBuffer());
-        } catch (e) {
-          console.debug(e);
-          return false;
-        }
-      default:
-        return publicKey.startsWith("0x");
+    tokens: string[]
+  ) {
+    if (!(blockchain in this.results[providerName].tokens)) {
+      this.results[providerName].tokens[blockchain] = [];
     }
+    this.results[providerName].tokens[blockchain] = Array.from(
+      new Set<string>(
+        this.results[providerName].tokens[blockchain]!.concat(tokens)
+      )
+    );
+
+    if (!(blockchain in this.allTokensForBlockchain)) {
+      this.allTokensForBlockchain[blockchain] = [];
+    }
+    this.allTokensForBlockchain[blockchain] = Array.from(
+      new Set<string>(this.allTokensForBlockchain[blockchain]!.concat(tokens))
+    );
   }
 
-  protected async fetch({
-    url,
-    body,
-    blockchain,
-  }: ParamType): Promise<TokenBalance[]> {
-    const ret = await fetch(url, {
-      method: this.method,
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
+  protected getTimeStatistics(
+    timeExec: BenchmarkTime
+  ): BenchmarkTimeStatisticsResult {
+    let totalTime = 0,
+      count = 0,
+      maxTime = 0,
+      minTime = 0;
+
+    let avgPerBlockchain: {
+      [key in BlockchainsEnum]?: {
+        total: number;
+        count: number;
+      };
+    } = {};
+
+    Object.keys(timeExec).forEach((blockchain) => {
+      timeExec[blockchain as BlockchainsEnum]!.forEach((time) => {
+        totalTime += time;
+        count++;
+
+        if (time > maxTime) {
+          maxTime = time;
+        }
+        if (time < minTime || minTime === 0) {
+          minTime = time;
+        }
+
+        if (!(blockchain in avgPerBlockchain)) {
+          avgPerBlockchain[blockchain as BlockchainsEnum] = {
+            total: 0,
+            count: 0,
+          };
+        }
+        avgPerBlockchain[blockchain as BlockchainsEnum]!.total += time;
+        avgPerBlockchain[blockchain as BlockchainsEnum]!.count++;
+      });
     });
 
-    if (!ret.ok) {
-      if (ret.status === 430) {
-        throw new TEMPORARY_BLOCK_EXCEPTION();
-      }
-      if (ret.status === 429) {
-        throw new TOO_MANY_REQUESTS_EXCEPTION();
-      }
-      if (ret.status === 403 || ret.status === 401) {
-        throw new FORBIDDEN_EXCEPTION();
-      }
-      console.debug(ret);
-      throw new NOT_OK_EXCEPTION();
-    }
+    let ret: BenchmarkTimeStatisticsResult = {
+      totalTime,
+      count,
+      avgTime: count > 0 ? totalTime / count : 0,
+      maxTime,
+      minTime,
+    };
 
-    const retJson = await ret.json();
-    return this.transformResponse(blockchain, retJson);
+    Object.keys(avgPerBlockchain).forEach((blockchain) => {
+      ret[`avgTimeFor${blockchain as BlockchainsEnum}`] =
+        avgPerBlockchain[blockchain as BlockchainsEnum]!.count > 0
+          ? avgPerBlockchain[blockchain as BlockchainsEnum]!.total /
+            avgPerBlockchain[blockchain as BlockchainsEnum]!.count
+          : 0;
+    });
+
+    return ret;
+  }
+  protected getTokenStatistics(
+    tokens: BenchmarkToken
+  ): BenchmarkTokenStatisticsResult {
+    let ret: BenchmarkTokenStatisticsResult = {};
+
+    Object.keys(tokens).forEach((blockchain) => {
+      ret[`missingTokensFor${blockchain as BlockchainsEnum}`] =
+        this.allTokensForBlockchain[blockchain as BlockchainsEnum]
+          ?.filter((a) => !tokens[blockchain as BlockchainsEnum]!.includes(a))
+          .join(", ");
+    });
+
+    return ret;
+  }
+
+  public getResults(): BenchmarkResultAttributes[] {
+    return Object.keys(this.results)
+      .map((providerName) => {
+        let providerResult = this.results[providerName];
+
+        return {
+          provider: providerName,
+          ...this.getTimeStatistics(providerResult.timeExec),
+          ...this.getTokenStatistics(providerResult.tokens),
+        };
+      })
+      .sort((a, b) => (a.avgTime ?? 0) - (b.avgTime ?? 0));
   }
 }

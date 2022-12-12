@@ -1,6 +1,6 @@
-import { Benchmark, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
 
-export class CovalentHQBenchmark extends Benchmark {
+export class CovalentHQBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 300;
   protected url: string =
     "https://api.covalenthq.com/v1/{:chain}/address/{:address}/balances_v2/";
@@ -31,13 +31,13 @@ export class CovalentHQBenchmark extends Benchmark {
 
   constructor(benchmarkChains: BlockchainsEnum[]) {
     super();
-    this.prepareBlockChains(benchmarkChains);
+    this.prepareBlockchains(benchmarkChains);
   }
 
   protected getParams(publicKey: string): ParamType[] {
     const key = process.env.COVALENTHQ_API_KEY ?? "";
 
-    return this.blockChains.map((blockchain) => {
+    return this.queryingBlockchains.map((blockchain) => {
       const params = new URLSearchParams({
         key,
       });

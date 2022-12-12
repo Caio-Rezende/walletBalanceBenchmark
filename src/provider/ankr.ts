@@ -1,6 +1,6 @@
-import { Benchmark, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
 
-export class ANKRBenchmark extends Benchmark {
+export class ANKRBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 30000;
   protected url: string = "https://rpc.ankr.com/multichain";
   protected method: string = "POST";
@@ -26,23 +26,25 @@ export class ANKRBenchmark extends Benchmark {
 
   constructor(benchmarkChains: BlockchainsEnum[]) {
     super();
-    this.prepareBlockChains(benchmarkChains);
+    this.prepareBlockchains(benchmarkChains);
   }
 
   protected getParams(publicKey: string): ParamType[] {
-    return this.blockChains.map((blockchain: string) => ({
-      blockchain: this.mapBlockchainName[blockchain],
-      url: this.url,
-      body: {
-        jsonrpc: "2.0",
-        method: "ankr_getAccountBalance",
-        params: {
-          blockchain,
-          walletAddress: publicKey,
+    return [
+      {
+        blockchain: BlockchainsEnum.ethereum,
+        url: this.url,
+        body: {
+          jsonrpc: "2.0",
+          method: "ankr_getAccountBalance",
+          params: {
+            blockchain: this.queryingBlockchains,
+            walletAddress: publicKey,
+          },
+          id: 1,
         },
-        id: 1,
       },
-    }));
+    ];
   }
 
   protected transformResponse(
@@ -50,7 +52,7 @@ export class ANKRBenchmark extends Benchmark {
     ret: any
   ): TokenBalance[] {
     return ret?.result?.assets?.map((asset: any) => ({
-      blockchain,
+      blockchain: this.mapBlockchainName[asset?.blockchain],
       token: asset?.tokenSymbol,
       amount: asset?.balance,
       amountUsd: asset?.balanceUsd,

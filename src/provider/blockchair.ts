@@ -1,7 +1,7 @@
 import { HeadersInit } from "node-fetch";
-import { Benchmark, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
 
-export class BlockChairBenchmark extends Benchmark {
+export class BlockChairBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 30;
   protected url: string =
     "https://api.blockchair.com/{:chain}/dashboards/address/{:address}?erc_20=true&assets_in_usd=true";
@@ -23,11 +23,11 @@ export class BlockChairBenchmark extends Benchmark {
 
   constructor(benchmarkChains: BlockchainsEnum[]) {
     super();
-    this.prepareBlockChains(benchmarkChains);
+    this.prepareBlockchains(benchmarkChains);
   }
 
   protected getParams(publicKey: string): ParamType[] {
-    return this.blockChains.map((blockchain) => {
+    return this.queryingBlockchains.map((blockchain) => {
       return {
         blockchain: this.mapBlockchainName[blockchain],
         url: this.url

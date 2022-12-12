@@ -1,7 +1,7 @@
 import { HeadersInit } from "node-fetch";
-import { Benchmark, BlockchainsEnum, ParamType, TokenBalance } from "../model";
+import { BenchmarkProvider, BlockchainsEnum, ParamType, TokenBalance } from "../model";
 
-export class MoralisBenchmark extends Benchmark {
+export class MoralisBenchmark extends BenchmarkProvider {
   protected minIntervalBettweenRequestsInSeconds = 60 / 1500;
   protected url: string =
     "https://deep-index.moralis.io/api/v2/{:address}/erc20?chain={:evm_chain}";
@@ -28,7 +28,7 @@ export class MoralisBenchmark extends Benchmark {
 
   constructor(benchmarkChains: BlockchainsEnum[]) {
     super();
-    this.prepareBlockChains(benchmarkChains);
+    this.prepareBlockchains(benchmarkChains);
   }
 
   protected getHeaders(): HeadersInit {
@@ -40,7 +40,7 @@ export class MoralisBenchmark extends Benchmark {
   }
 
   protected getParams(publicKey: string): ParamType[] {
-    return this.blockChains.map((blockchain) => {
+    return this.queryingBlockchains.map((blockchain) => {
       let url: string;
       if (blockchain === "solana") {
         url = this.solanaUrl.replace("{:address}", publicKey);
