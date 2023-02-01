@@ -10,6 +10,7 @@ import {
   DebankBenchmark,
   MoralisBenchmark,
   BitQueryBenchmark,
+  ZerionBenchmark,
 } from "./provider";
 
 const benchmarkChains: BlockchainsEnum[] = [
@@ -33,6 +34,7 @@ const providers: BenchmarkProvider[] = [
   new CovalentHQBenchmark(benchmarkChains),
   new DebankBenchmark(benchmarkChains),
   new MoralisBenchmark(benchmarkChains),
+  new ZerionBenchmark(benchmarkChains),
 ];
 
 (async () => {
